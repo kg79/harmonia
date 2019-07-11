@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const ejs = require('ejs');
-// const IP = '192.168.1.144';
 const IP = 'localhost';
 const PORT = 3334;
 app.set('view engine', 'ejs');
