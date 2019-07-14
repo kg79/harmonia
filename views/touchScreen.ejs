@@ -195,10 +195,9 @@ let dataIndex;
 
 let selected = false;
 
-bottom.addEventListener('touchstart', e => {
-console.log(selected)
-    if (selected === true) {
-        e.preventDefault();
+function theSelector(e) {
+
+    e.preventDefault();
 
         interfaceIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
 
@@ -206,8 +205,15 @@ console.log(selected)
         decimals[interfaceIndex].innerText = eval(selectedRatio.textContent).toPrecision(6).replace(/0+$/, '');
         values[interfaceIndex].innerText = (root.value* eval(selectedRatio.textContent)).toPrecision(6).replace(/0+$/, '');
 
-selected = false;
-    } else {
+        selected = false;
+        bottom.removeEventListener('touchstart', theSelector);
+        bottom.addEventListener('touchstart', playNote);
+        bottom.addEventListener('touchend', stopNote);
+        
+}
+
+function playNote(e) {
+
         dataIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
 
         switch (dataIndex) {
@@ -239,15 +245,13 @@ selected = false;
                 notes[8].on();
             break;
         }
-        selected = false;
-    }
-})
+}
 
-bottom.addEventListener('touchend', e => {
+function stopNote(e) {
 
 dataIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
 
-if (selected === false) {
+
     switch (dataIndex) {
         case 0:
             notes[0].off();
@@ -278,8 +282,6 @@ if (selected === false) {
         break;
     }
 }
-selected = false;
-})
 
 let ascendingPool = [];
 const harmonicsInside = document.getElementById('harmonicsInside');
@@ -354,7 +356,9 @@ const root = document.getElementById('root');
 
 harmonicsInside.addEventListener('click', e => {
     selectedRatio.innerText = e.srcElement.textContent;
-    selected = true;
+    bottom.addEventListener('touchstart', theSelector); 
+    bottom.removeEventListener('touchstart', playNote);
+    bottom.removeEventListener('touchend', stopNote);
 })
 
 

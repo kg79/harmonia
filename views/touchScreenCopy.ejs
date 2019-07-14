@@ -3,24 +3,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <head>
         <style>
+            :root {
+                --colour:#03c9a8;
+            }
             body {
                 margin:0;
             }
             main {
-                background:gray;
                 height:100vh;
             } #top {
-                background:#999;
+                background:var(--colour);
                 height:20vh;
                 display:flex;
                 justify-content:space-around;
             } #bottom {
-                background:aqua;
+                background:var(--colour);
                 height:80vh;
                 display:grid;
                 grid-template-columns:auto auto auto;
             } article {
-                background:lime;
+                background:white;
                 border:solid 2px black;
                 width:20vw;
                 margin:auto;
@@ -35,19 +37,33 @@
                 grid-template-columns:auto auto;
                 overflow:scroll;
                 height:16vh;
-            } .harmonics {
+            } .harmonics {  
                 border:solid .05em black;
+                background:white;
             } #generator {
                 width:12em;
             } .selection {
                 background:white;
                 height:3em;
                 border:.05em solid black;
+                display:flex;
+                justify-content:space-around;
+                align-items:center;
             } .tiles {
                 text-align:center;
                 user-select:none;
-            } #rootSection {
+            } #rootSection, #volumeBox, #waveBox, #selectBox {
                 height:1.5em;
+            } .fractions {
+                user-select:none;
+            } .decimals {
+                user-select:none;
+            } .values {
+                user-select:none;
+            } #eq {
+                display:flex;
+                flex-direction:column;
+                justify-content:space-evenly;
             }
         </style>
     </head>
@@ -62,14 +78,28 @@
                 <section id='harmonicsInside'></section>    
             </div>
 
-            <div class='controls'>
+            <div class='controls' id='eq'>
 
-                <section class='selection'>
-                    selected ratio
+                <section class='selection' id='selectBox'>
+                    selection:
                     <section id='selectedRatio'></section>
                 </section>
+
                 <section class='selection' id='rootSection'>
                     root:<input id='root' type='number' value='432'>
+                </section>
+
+                <section class='selection' id='volumeBox'>
+                    vol: <input id='volume' type='range' step='1' min='0' max='10' value='2'>
+                </section>
+
+                <section class='selection' id='waveBox'>
+                        <select id='wave'>
+                                <option value="sine">sine</option>
+                                <option value="square">square</option>
+                                <option value="triangle">triangle</option>
+                                <option value="sawtooth">sawtooth</option>
+                        </select>
                 </section>
 
             </div>
@@ -88,6 +118,8 @@
     </main>
     </body>
     <script>
+    const volume = document.getElementById('volume');
+    const wave = document.getElementById('wave');
 
     let atx;
     window.onclick = () => atx = new AudioContext();
@@ -106,19 +138,18 @@ class Music {
 	this.index = index;
     }
     on() {
-                this.name = atx.createOscillator();
-                this.volume = atx.createGain();
-                this.name.frequency.value = root.value* eval(fractions[this.index].textContent)
-                this.volume.gain.value = .2;
-                this.name.type = 'sine';
-                this.name.connect(this.volume).connect(atx.destination);
-                this.name.start(0);
-                tiles[this.index].style.border = 'solid red .1em';
-      //  }
+        this.name = atx.createOscillator();
+        this.volume = atx.createGain();
+        this.name.frequency.value = root.value* eval(fractions[this.index].textContent);
+        this.volume.gain.value = volume.value/10;
+        this.name.type = wave.value;
+        this.name.connect(this.volume).connect(atx.destination);
+        this.name.start(0);
+            tiles[this.index].style.border = 'solid red .1em';
     }
     off() {
 	this.name.stop(0);
-	tiles[this.index].style.border = 'solid black .1em';
+	    tiles[this.index].style.border = 'solid black .1em';
     }
 }
 
@@ -162,38 +193,53 @@ let notes = [
 const bottom = document.getElementById('bottom');
 let dataIndex;
 
+let selected = false;
+
 bottom.addEventListener('touchstart', e => {
+console.log(selected)
+    if (selected === true) {
+        e.preventDefault();
 
-    dataIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
+        interfaceIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
 
-    switch (dataIndex) {
-        case 0:
-            notes[0].on();
-        break;
-        case 1:
-            notes[1].on();
-        break;
-        case 2:
-            notes[2].on();
-        break;
-        case 3:
-            notes[3].on();
-        break;
-        case 4:
-            notes[4].on();
-        break;
-        case 5:
-            notes[5].on();
-        break;
-        case 6:
-            notes[6].on();
-        break;
-        case 7:
-            notes[7].on();
-        break;
-        case 8:
-            notes[8].on();
-        break;
+        fractions[interfaceIndex].innerText = selectedRatio.textContent;
+        decimals[interfaceIndex].innerText = eval(selectedRatio.textContent).toPrecision(6).replace(/0+$/, '');
+        values[interfaceIndex].innerText = (root.value* eval(selectedRatio.textContent)).toPrecision(6).replace(/0+$/, '');
+
+selected = false;
+    } else {
+        dataIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
+
+        switch (dataIndex) {
+            case 0:
+                notes[0].on();
+            break;
+            case 1:
+                notes[1].on();
+            break;
+            case 2:
+                notes[2].on();
+            break;
+            case 3:
+                notes[3].on();
+            break;
+            case 4:
+                notes[4].on();
+            break;
+            case 5:
+                notes[5].on();
+            break;
+            case 6:
+                notes[6].on();
+            break;
+            case 7:
+                notes[7].on();
+            break;
+            case 8:
+                notes[8].on();
+            break;
+        }
+        selected = false;
     }
 })
 
@@ -201,35 +247,38 @@ bottom.addEventListener('touchend', e => {
 
 dataIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
 
-switch (dataIndex) {
-    case 0:
-        notes[0].off();
-    break;
-    case 1:
-        notes[1].off();
-    break;
-    case 2:
-        notes[2].off();
-    break;
-    case 3:
-        notes[3].off();
-    break;
-    case 4:
-        notes[4].off();
-    break;
-    case 5:
-        notes[5].off();
-    break;
-    case 6:
-        notes[6].off();
-    break;
-    case 7:
-        notes[7].off();
-    break;
-    case 8:
-        notes[8].off();
-    break;
+if (selected === false) {
+    switch (dataIndex) {
+        case 0:
+            notes[0].off();
+        break;
+        case 1:
+            notes[1].off();
+        break;
+        case 2:
+            notes[2].off();
+        break;
+        case 3:
+            notes[3].off();
+        break;
+        case 4:
+            notes[4].off();
+        break;
+        case 5:
+            notes[5].off();
+        break;
+        case 6:
+            notes[6].off();
+        break;
+        case 7:
+            notes[7].off();
+        break;
+        case 8:
+            notes[8].off();
+        break;
+    }
 }
+selected = false;
 })
 
 let ascendingPool = [];
@@ -293,7 +342,7 @@ function harmonicsGenerator() {
         harmonicsInside.appendChild(decimalNode);
 	
 	    fractionNode = document.createElement(`section`);
-        fractionNode.setAttribute('class', 'harmonics')
+        fractionNode.setAttribute('class', 'harmonics');
         fractionText = document.createTextNode(`${ascendingPool[i].fractions}`);
         fractionNode.appendChild(fractionText);
         harmonicsInside.appendChild(fractionNode);
@@ -305,21 +354,12 @@ const root = document.getElementById('root');
 
 harmonicsInside.addEventListener('click', e => {
     selectedRatio.innerText = e.srcElement.textContent;
+    selected = true;
 })
 
 
 let interfaceIndex;
-bottom.addEventListener('click', e => {
 
-    e.preventDefault();
-
-        interfaceIndex = eval(e.srcElement.parentNode.getAttribute('data-index'));
-
-        fractions[interfaceIndex].innerText = selectedRatio.textContent;
-        decimals[interfaceIndex].innerText = eval(selectedRatio.textContent).toPrecision(6).replace(/0+$/, '');
-        values[interfaceIndex].innerText = (root.value* eval(selectedRatio.textContent)).toPrecision(6).replace(/0+$/, '');
-
-})
 
     </script>
 </html>
