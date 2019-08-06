@@ -1,21 +1,5 @@
-let atx;
-window.onclick = () => atx = new AudioContext();
-const keyNames = document.getElementsByClassName('keyNames');
-const decimals = document.getElementsByClassName('decimals');
-const fractions = document.getElementsByClassName('fractions');
-const values = document.getElementsByClassName('values');
 
 const keyCodes = [
-    {'symb':'1', 'numb':49},
-    {'symb':'2', 'numb':50},
-    {'symb':'3', 'numb':51},
-    {'symb':'4', 'numb':52},
-    {'symb':'5', 'numb':53},
-    {'symb':'6', 'numb':54},
-    {'symb':'7', 'numb':55},
-    {'symb':'8', 'numb':56},
-    {'symb':'9', 'numb':57},
-    {'symb':'0', 'numb':48},
     {'symb':'Q', 'numb':81},
     {'symb':'W', 'numb':87},
     {'symb':'E', 'numb':69},
@@ -46,12 +30,8 @@ const keyCodes = [
     {'symb':',', 'numb':188},
     {'symb':'.', 'numb':190},
     {'symb':'/', 'numb':191},
-    
 ];
 
-const ROOT = 432;
-
-const spans = document.getElementsByTagName('span');
 class Music {
     constructor(name, volume, index) {
 	this.name = name;
@@ -63,23 +43,37 @@ class Music {
 	if (this.playing === false) {
 	    this.name = atx.createOscillator();
 	    this.volume = atx.createGain();
-	    this.name.frequency.value = ROOT* eval(fractions[this.index].textContent);
-        this.volume.gain.value = .1;
+	    this.name.frequency.value = stdPitch.value* eval(fractions[this.index].textContent);
+        this.volume.gain.value = volume.value/10;
+        this.name.type = wave.value;
 	    this.name.connect(this.volume).connect(atx.destination);
 	    this.name.start(0);
 	    this.playing = true;
-	    spans[this.index].style.background = '#333';
+        tiles[this.index].style.border = 'solid red .1em';
 	}
     }
     off() {
 	this.name.stop(0);
 	this.playing = false;
-	spans[this.index].style.background = '#ddd';
+	tiles[this.index].style.border = 'solid black .1em';
     }
 }
 
-let name0, name1, name2, name3, name4, name5, name6, name7, name8, name9, name10, name11, name12, name13, name14, name15, name16, name17, name18, name19, name20, name21, name22, name23, name24, name25, name26, name27, name28, name29, name30, name31, name32, name33, name34, name35, name36, name37, name38, name39;
-let volume0, volume1, volume2, volume3, volume4, volume5, volume6, volume7, volume8, volume9, volume10, volume11, volume12, volume13, volume14, volume15, volume16, volume17, volume18, volume19, volume20, volume21, volume22, volume23, volume24, volume25, volume26, volume27, volume28, volume29, volume30, volume31, volume32, volume33, volume34, volume35, volume36, volume37, volume38, volume39;
+Music.prototype.sampleOn = function(ratio){
+        this.name = atx.createOscillator();
+	    this.volume = atx.createGain();
+	    this.name.frequency.value = stdPitch.value* eval(ratio);
+        this.volume.gain.value = volume.value/10;
+        this.name.type = wave.value;
+	    this.name.connect(this.volume).connect(atx.destination);
+	    this.name.start(0);
+}
+Music.prototype.sampleOff = function() {
+    this.name.stop(0);
+}
+
+let name0, name1, name2, name3, name4, name5, name6, name7, name8, name9, name10, name11, name12, name13, name14, name15, name16, name17, name18, name19, name20, name21, name22, name23, name24, name25, name26, name27, name28, name29, name30;
+let volume0, volume1, volume2, volume3, volume4, volume5, volume6, volume7, volume8, volume9, volume10, volume11, volume12, volume13, volume14, volume15, volume16, volume17, volume18, volume19, volume20, volume21, volume22, volume23, volume24, volume25, volume26, volume27, volume28, volume29, volume30;
 
 
 let notes = [
@@ -114,17 +108,8 @@ let notes = [
     new Music(name28, volume28, 28),
     new Music(name29, volume29, 29),
     new Music(name30, volume30, 30),
-    new Music(name31, volume31, 31),
-    new Music(name32, volume32, 32),
-    new Music(name33, volume33, 33),
-    new Music(name34, volume34, 34),
-    new Music(name35, volume35, 35),
-    new Music(name36, volume36, 36),
-    new Music(name37, volume37, 37),
-    new Music(name38, volume38, 38),
-    new Music(name39, volume39, 39),
-    
 ];
+
 
 window.addEventListener('keydown', e => {
     switch (e.keyCode) {
@@ -218,37 +203,6 @@ window.addEventListener('keydown', e => {
     case keyCodes[29].numb:
 	notes[29].on();
 	break;
-    case keyCodes[30].numb:
-        notes[30].on();
-        break;
-    case keyCodes[31].numb:
-        notes[31].on();
-        break;
-    case keyCodes[32].numb:
-        notes[32].on();
-        break;
-    case keyCodes[33].numb:
-        notes[33].on();
-        break;
-    case keyCodes[34].numb:
-        notes[34].on();
-        break;
-    case keyCodes[35].numb:
-        notes[35].on();
-        break;
-    case keyCodes[36].numb:
-        notes[36].on();
-        break;
-    case keyCodes[37].numb:
-        notes[37].on();
-        break;
-    case keyCodes[38].numb:
-        notes[38].on();
-        break;
-    case keyCodes[39].numb:
-        notes[39].on();
-        break;
-	
     }
 });
 
@@ -344,161 +298,5 @@ window.addEventListener('keyup', e => {
     case keyCodes[29].numb:
 	notes[29].off();
 	break;
-    case keyCodes[30].numb:
-        notes[30].off();
-        break;
-    case keyCodes[31].numb:
-        notes[31].off();
-        break;
-    case keyCodes[32].numb:
-        notes[32].off();
-        break;
-    case keyCodes[33].numb:
-        notes[33].off();
-        break;
-    case keyCodes[34].numb:
-        notes[34].off();
-        break;
-    case keyCodes[35].numb:
-        notes[35].off();
-        break;
-    case keyCodes[36].numb:
-        notes[36].off();
-        break;
-    case keyCodes[37].numb:
-        notes[37].off();
-        break;
-    case keyCodes[38].numb:
-        notes[38].off();
-        break;
-    case keyCodes[39].numb:
-        notes[39].off();
-        break;
     }
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    for (let i = 0; i < keyCodes.length; i++) {
-	    keyNames[i].innerText = keyCodes[i].symb
-    }
-});
-
-
-let ray = [];
-const ascendingInside = document.getElementById('ascendingInside');
-const range = document.getElementById('range');
-const articles = document.getElementsByTagName('article');
-
-function harmonicGenerator() {
-    //generator harmonics
-    let numerator = 2, denominator = 1;
-    ray.push({'fractions':'1/1','decimals':1/1});
-    for (let i = 0; i < range.value; i++) {
-	if (numerator > denominator) {
-            ray.push({'fractions':`${numerator}/${denominator}`,'decimals':numerator/denominator});
-	    denominator++;
-	}
-	if (denominator === numerator) {
-	    denominator = 1;
-	    numerator++;
-	}
-    }
-    //bubble sort
-    let sideA, sideB;
-    for (let i = 0; i < ray.length; i++) {
-	for (let j = 1; j < ray.length; j++) {
-	    if (ray[j].decimals < ray[j-1].decimals) {
-		sideA = ray[j].decimals;
-                sideB = ray[j].fractions;
-		ray[j].decimals = ray[j-1].decimals;
-                ray[j].fractions = ray[j-1].fractions;
-		ray[j-1].decimals = sideA;
-                ray[j-1].fractions = sideB;
-	    }
-	}
-    }
-    // //trim
-    for (let i = 1; i < ray.length; i++) {
-        if (ray[i].decimals === ray[i-1].decimals) {
-            while (ray[i].decimals === ray[i-1].decimals) {
-                ray.splice(i, 1);
-            }
-        }
-    }
-    //render
-    // for (let i in ray) {
-    //     if (ray[i].decimals <= 2) {
-    //         decimals[i].innerText = ray[i].decimals.toPrecision(5).replace(/0+$/, '');
-    //         fractions[i].innerText = ray[i].fractions;
-    //         values[i].innerText = (ray[i].decimals * ROOT).toPrecision(7).replace(/0+$/, '').replace(/\.$/, '');
-    //     }
-    // }
-    
-    while (articles.length) {
-	for (let i = 0; i < articles.length; i++) {
-	    articles[i].parentElement.removeChild(articles[i])
-	}
-    }
-    
-    
-    let decimalNode, decimalText, fractionNode, fractionText;
-    
-    
-    for (let i = 0; i < range.value; i++) {
-	
-        decimalNode = document.createElement(`article`);
-        decimalText = document.createTextNode(`${ray[i].decimals.toPrecision(5).replace(/0+$/, '')}`);
-        decimalNode.appendChild(decimalText);
-        ascendingInside.appendChild(decimalNode);
-	
-	    fractionNode = document.createElement(`article`);
-        fractionText = document.createTextNode(`${ray[i].fractions}`);
-        fractionNode.appendChild(fractionText);
-        ascendingInside.appendChild(fractionNode);
-    }
-    
-}
-
-const dragonDrop = document.getElementById('dragonDrop');
-const interface = document.getElementById('interface');
-
-ascendingInside.onclick = e => {
-    dragonDrop.innerText = e.target.textContent;
-}
-interface.onclick = e => {
-    if (e.target.getAttribute('class') == 'fractions') {
-	fractions[parseInt(e.target.getAttribute('data-index'))].innerText = dragonDrop.textContent;
-	decimals[parseInt(e.target.getAttribute('data-index'))].innerText = eval(dragonDrop.textContent);
-	values[parseInt(e.target.getAttribute('data-index'))].innerText = ROOT* eval(dragonDrop.textContent);
-    }
-}
-const startAt = document.getElementById('startAt');
-
-function shift() {
-    let startingPoint;
-    let array = [];
-    for (let i = 0; i < keyCodes.length; i++) {
-        if (keyCodes[i].symb == startAt.value) {
-            startingPoint = i;
-        }
-    }
-
-    for (let i = startingPoint; i < 40 - startingPoint; i++) {
-        if (typeof eval(fractions[i].textContent) == 'number') {
-            array.push(fractions[i].textContent);
-        }
-    }
-
-    fractions[startingPoint].textContent = `0/0`;
-    decimals[startingPoint].textContent = '0.0';
-    values[startingPoint].textContent = '0';
-
-console.log(array)
-let count = 0;
-    for (let i = startingPoint+1; i <= array.length+startingPoint; i++) {
-        fractions[i].innerText = array[count];
-        decimals[i].innerText = eval(array[count]);
-        values[i].innerText = ROOT* eval(array[count]);
-        count++;
-    }
-}

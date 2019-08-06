@@ -2,9 +2,9 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const ejs = require('ejs');
-// const IP = 'localhost';
-const IP = '10.0.0.22';
-const PORT = 3334;
+const IP = 'localhost';
+const PORT = 3333;
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
 
@@ -28,6 +28,11 @@ app.get('/touchscreen', (req, res) => {
 app.get('/favicon.ico', (req, res) => {
     res.end('favicon')
 })
+
+app.get('/test', (req, res) => {
+    res.render('test')
+})
+
 
 
 app.listen(PORT, IP, console.log(`localhost:${PORT}`));
